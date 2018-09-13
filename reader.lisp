@@ -43,7 +43,7 @@
   (let ((*default-readtable* *readtable*)
         (*readtable* (copy-readtable)))
     (set-macro-character #\{ #'inline-lisp-reader)
-    (set-macro-character #\} (get-macro-character #\)))
+    (set-syntax-from-char #\} #\))
     (set-syntax-from-char #\' #\")
     (read stream)))
 
@@ -94,7 +94,7 @@
                      (*readtable* (copy-readtable)))
                  (assert (char= (read-char stream) #\>))
                  (set-macro-character #\{ #'inline-lisp-reader)
-                 (set-macro-character #\} (get-macro-character #\)))
+                 (set-syntax-from-char #\} #\))
                  (list 'h name `(list ,@attrs)
                        (progn
                          (catch 'end-of-tag
