@@ -2,7 +2,8 @@
   (:use #:cl)
   (:import-from #:lsx/component
                 #:h)
-  (:export #:enable-lsx-syntax))
+  (:export #:enable-lsx-syntax
+           #:disable-lsx-syntax))
 (in-package #:lsx/reader)
 
 (defun read-as-string (stream while)
@@ -114,6 +115,25 @@
 (defun do-nothing (stream char)
   (declare (ignore stream char)))
 
-(defun enable-lsx-syntax ()
+(defvar *previous-readtables* '())
+
+(defun %enable-lsx-syntax ()
+  (push *readtable* *previous-readtables*)
+  (setf *readtable* (copy-readtable))
   (set-macro-character #\< #'read-html-tag)
-  (set-macro-character #\> #'do-nothing))
+  (set-macro-character #\> #'do-nothing)
+  (values))
+
+(defun %disable-lsx-syntax ()
+  (if *previous-readtables*
+      (setf *readtable* (pop *previous-readtables*))
+      (setf *readtable* (copy-readtable nil)))
+  (values))
+
+(defmacro enable-lsx-syntax ()
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (%enable-lsx-syntax)))
+
+(defmacro disable-lsx-syntax ()
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (%disable-lsx-syntax)))
