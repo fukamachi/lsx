@@ -1,9 +1,10 @@
 (defpackage #:lsx/html
   (:use #:cl)
-  (:export #:h
+  (:export #:h*
            #:render-object
            #:html-mode
            #:element
+           #:make-element
            #:element-name
            #:element-attributes
            #:element-children
@@ -85,7 +86,7 @@
 (defmethod render-object ((object function) stream)
   (render-object (funcall object) stream))
 
-(defun h (tag-name attributes &optional (children nil children-specified-p))
+(defun h* (tag-name attributes &optional (children nil children-specified-p))
   (make-element
    :name tag-name
    :attributes (loop for (name . value) in attributes

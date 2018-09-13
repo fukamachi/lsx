@@ -1,6 +1,6 @@
 (defpackage #:lsx/reader
   (:use #:cl)
-  (:import-from #:lsx/html
+  (:import-from #:lsx/component
                 #:h)
   (:export #:enable-lsx-syntax))
 (in-package #:lsx/reader)
