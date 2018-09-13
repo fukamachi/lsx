@@ -74,40 +74,42 @@
 
 (defun read-html-tag (stream char)
   (declare (ignore char))
-  (if (char= (peek-char t stream) #\/)
-      ;; Reading closing tag
-      (progn
-        (read-char stream)
-        (let ((name (read-element-name stream)))
-          (assert (char= (read-char stream) #\>))
-          (unless (equal name *reading-tag*)
-            (error "Unmatched closing tag: ~A" name)))
-        (throw 'end-of-tag *reading-tag-children*))
-      ;; Reading opening tag
-      (progn
-        (let ((name (read-element-name stream))
-              (attrs (loop until (find (peek-char t stream) '(#\/ #\>))
-                           collect `(cons ,@(read-attribute stream)))))
-          (let ((next (peek-char t stream)))
-            (if (char= next #\/)
-                ;; self closing tag
-                (progn
-                  (read-char stream)
-                  (assert (char= (read-char stream) #\>))
-                  (list 'h name `(list ,@attrs)))
-                (let ((*reading-tag* name)
-                      (*reading-tag-children* (list))
-                      (*default-readtable* *readtable*)
-                      (*readtable* (copy-readtable)))
-                  (assert (char= (read-char stream) #\>))
-                  (set-macro-character #\{ #'inline-lisp-reader)
-                  (set-macro-character #\} (get-macro-character #\)))
-                  (list 'h name `(list ,@attrs)
-                        (progn
-                          (catch 'end-of-tag
-                            (read-html-tag-inner stream))
-                          `(list
-                            ,@(nreverse *reading-tag-children*)))))))))))
+  (let ((next (peek-char nil stream)))
+    (cond
+      ((alphanumericp next)
+       ;; Reading opening tag
+       (let ((name (read-element-name stream))
+             (attrs (loop until (find (peek-char t stream) '(#\/ #\>))
+                          collect `(cons ,@(read-attribute stream)))))
+         (let ((next (peek-char t stream)))
+           (if (char= next #\/)
+               ;; self closing tag
+               (progn
+                 (read-char stream)
+                 (assert (char= (read-char stream) #\>))
+                 (list 'h name `(list ,@attrs)))
+               (let ((*reading-tag* name)
+                     (*reading-tag-children* (list))
+                     (*default-readtable* *readtable*)
+                     (*readtable* (copy-readtable)))
+                 (assert (char= (read-char stream) #\>))
+                 (set-macro-character #\{ #'inline-lisp-reader)
+                 (set-macro-character #\} (get-macro-character #\)))
+                 (list 'h name `(list ,@attrs)
+                       (progn
+                         (catch 'end-of-tag
+                           (read-html-tag-inner stream))
+                         `(list
+                           ,@(nreverse *reading-tag-children*)))))))))
+      ((char= next #\/)
+       ;; Reading closing tag
+       (read-char stream)
+       (let ((name (read-element-name stream)))
+         (assert (char= (read-char stream) #\>))
+         (unless (equal name *reading-tag*)
+           (error "Unmatched closing tag: ~A" name)))
+       (throw 'end-of-tag *reading-tag-children*))
+      (t '<))))
 
 (defun do-nothing (stream char)
   (declare (ignore stream char)))
