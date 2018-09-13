@@ -2,7 +2,15 @@
   (:use #:cl)
   (:export #:h
            #:render-object
-           #:html-mode))
+           #:html-mode
+           #:element
+           #:element-name
+           #:element-attributes
+           #:element-children
+           #:element-self-closing
+           #:attribute
+           #:attribute-name
+           #:attribute-value))
 (in-package #:lsx/html)
 
 (defvar *html-mode* :html5)
