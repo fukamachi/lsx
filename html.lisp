@@ -23,6 +23,24 @@
   (ecase *html-mode*
     ((:html :xhtml :html5) (setf *html-mode* new-value))))
 
+(defvar *escape-map*
+  (let ((hash (make-hash-table)))
+    (loop for (char . escaped) in '((#\& . "&amp;")
+                                    (#\< . "&lt;")
+                                    (#\> . "&gt;")
+                                    (#\" . "&quot;")
+                                    (#\' . "&#39;"))
+          do (setf (gethash char hash) escaped))
+    hash))
+
+(defun print-escaped-text (value stream)
+  (declare (type string value))
+  (loop for char of-type character across value
+        for escaped = (gethash char *escape-map*)
+        if escaped
+          do (write-string escaped stream)
+        else do (write-char char stream)))
+
 (defstruct element
   (name nil :type string)
   (attributes nil :type list)
@@ -50,7 +68,7 @@
 
 (defgeneric render-object (object stream)
   (:method (object stream)
-    (princ object stream)))
+    (print-escaped-text (princ-to-string object) stream)))
 
 (defmethod render-object ((element element) stream)
   (with-slots (name attributes children) element
@@ -97,10 +115,10 @@
             name content)))
 
 (defmethod render-object ((object string) stream)
-  (write-string object stream))
+  (print-escaped-text object stream))
 
 (defmethod render-object ((object number) stream)
-  (princ object stream))
+  (print-escaped-text (write-to-string object) stream))
 
 (defmethod render-object ((object null) stream)
   (declare (ignore stream)))
