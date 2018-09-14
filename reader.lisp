@@ -64,15 +64,14 @@
 (defvar *reading-tag-children*)
 
 (defun read-html-tag-inner (stream)
-  (let ((next (peek-char t stream)))
+  (let ((next (peek-char nil stream)))
     (case next
       ((#\{ #\<)
        (push (read stream) *reading-tag-children*))
       (otherwise
        (push (read-as-string stream
                              (lambda (char)
-                               (not (or (space-char-p char)
-                                        (char= char #\<)))))
+                               (not (find char '(#\< #\{)))))
              *reading-tag-children*)))
     (loop
       (push (read-html-tag-inner stream) *reading-tag-children*))))
