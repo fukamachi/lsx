@@ -32,16 +32,14 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ### Defining custom tags
 
 ```common-lisp
-(defclass welcome (lsx:component)
-  ((name :initarg :name)))
-
-(defmethod lsx:render-object ((object welcome) stream)
-  (lsx:render-object <h1>{(slot-value object 'name)}</h1> stream))
+(lsx:defcomponent welcome ()
+  (name)
+  (:render <h1>{name}</h1>))
 
 <welcome name="fukamachi"></welcome>
 ;=> #<WELCOME {10028D74D3}>
 
-(lsx:render-object <welcome name="fukamachi"></welcome> t)
+(lsx:render-object <welcome name="fukamachi" /> t)
 ;-> <h1>fukamachi</h1>
 ;=> NIL
 ```
