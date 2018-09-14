@@ -12,6 +12,10 @@
           for next = (peek-char nil stream)
           while (funcall while next)
           do (setf (aref buffer i) (read-char stream))
+          when (<= (length buffer) (1+ i))
+          do (let ((new-buffer (make-string (* 2 (length buffer)))))
+               (replace new-buffer buffer)
+               (setf buffer new-buffer))
           finally
              (return (subseq buffer 0 i)))))
 
