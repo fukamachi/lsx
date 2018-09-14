@@ -25,7 +25,7 @@
   (read-as-string stream
                   (lambda (char)
                     (or (alphanumericp char)
-                        (find char '(#\- #\_ #\:))))))
+                        (find char '(#\- #\_ #\: #\.))))))
 
 (defun space-char-p (char)
   (find char '(#\Space #\Tab #\Linefeed #\Return #\Page)))
