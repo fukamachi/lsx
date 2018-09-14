@@ -4,6 +4,7 @@
            #:render-object
            #:html-mode
            #:element
+           #:element-list
            #:make-element
            #:element-name
            #:element-attributes
@@ -27,6 +28,9 @@
   (children nil :type list)
   (self-closing nil :type boolean))
 
+(defstruct element-list
+  (elements nil :type list))
+
 (defstruct attribute
   (name nil :type string)
   value)
@@ -34,6 +38,15 @@
 (defmethod print-object ((object element) stream)
   (print-unreadable-object (object stream :type t :identity t)
     (princ (element-name object) stream)))
+
+(defmethod print-object ((object element-list) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (format stream "(~D ~:*element~[s~;~:;s~])"
+            (length (element-list-elements object)))))
+
+(defmethod render-object ((object element-list) stream)
+  (dolist (element (element-list-elements object))
+    (render-object element stream)))
 
 (defgeneric render-object (object stream)
   (:method (object stream)
