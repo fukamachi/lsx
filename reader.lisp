@@ -63,7 +63,7 @@
             (progn
               (read-char stream)
               (read-attribute-value stream))
-            nil)))
+            t)))
 
 (defvar *reading-tag*)
 (defvar *reading-tag-children*)

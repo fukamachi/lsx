@@ -74,7 +74,6 @@
   (with-slots (name attributes children) element
     (format stream "<~A" name)
     (dolist (attr attributes)
-      (write-char #\Space stream)
       (render-object attr stream))
     (if (element-self-closing element)
         (case (html-mode)
@@ -94,16 +93,19 @@
 
 (defmethod render-object ((attribute attribute) stream)
   (with-slots (name value) attribute
-    (format stream "~A" name)
-    (flet ((write-value (value)
-             (write-char #\= stream)
-             (write-char #\" stream)
-             (typecase value
-               (function (render-object (funcall value) stream))
-               (otherwise (render-object value stream)))
-             (write-char #\" stream)))
+    (let ((value (typecase value
+                   (function (funcall value))
+                   (otherwise value))))
       (when value
-        (write-value value)))))
+        (write-char #\Space stream)
+        (format stream "~A" name)
+        (unless (eq value t)
+          (flet ((write-value (value)
+                   (write-char #\= stream)
+                   (write-char #\" stream)
+                   (render-object value stream)
+                   (write-char #\" stream)))
+            (write-value value)))))))
 
 (defmethod render-object ((object element-list) stream)
   (dolist (element (element-list-elements object))
