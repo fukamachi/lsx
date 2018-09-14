@@ -126,6 +126,9 @@
 (defmethod render-object ((object null) stream)
   (declare (ignore stream)))
 
+(defmethod render-object ((object (eql 't)) stream)
+  (declare (ignore stream)))
+
 (defmethod render-object ((object function) stream)
   (render-object (funcall object) stream))
 
