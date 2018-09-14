@@ -2,6 +2,8 @@
   (:use #:cl)
   (:import-from #:lsx/component
                 #:h)
+  (:import-from #:lsx/html
+                #:make-declaration-element)
   (:export #:enable-lsx-syntax
            #:disable-lsx-syntax))
 (in-package #:lsx/reader)
@@ -108,6 +110,18 @@
                            (read-html-tag-inner stream))
                          `(list
                            ,@(nreverse *reading-tag-children*)))))))))
+      ((char= next #\!)
+       ;; Reading declaration
+       (read-char stream)
+       (let ((name (read-element-name stream)))
+         (skip-while stream #'space-char-p)
+         (let ((content (read-as-string stream
+                                        (lambda (char)
+                                          (not (char= char #\>))))))
+           (assert (char= (read-char stream) #\>))
+           `(make-declaration-element
+             :name ,name
+             :content ,content))))
       ((char= next #\/)
        ;; Reading closing tag
        (read-char stream)

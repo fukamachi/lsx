@@ -5,6 +5,7 @@
            #:html-mode
            #:element
            #:element-list
+           #:declaration-element
            #:make-element
            #:element-name
            #:element-attributes
@@ -31,6 +32,9 @@
 (defstruct element-list
   (elements nil :type list))
 
+(defstruct (declaration-element (:include element (name)))
+  (content nil :type string))
+
 (defstruct attribute
   (name nil :type string)
   value)
@@ -47,6 +51,11 @@
 (defmethod render-object ((object element-list) stream)
   (dolist (element (element-list-elements object))
     (render-object element stream)))
+
+(defmethod render-object ((object declaration-element) stream)
+  (with-slots (name content) object
+    (format stream "<!~A ~A>"
+            name content)))
 
 (defgeneric render-object (object stream)
   (:method (object stream)
