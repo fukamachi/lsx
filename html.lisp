@@ -48,15 +48,6 @@
     (format stream "(~D ~:*element~[s~;~:;s~])"
             (length (element-list-elements object)))))
 
-(defmethod render-object ((object element-list) stream)
-  (dolist (element (element-list-elements object))
-    (render-object element stream)))
-
-(defmethod render-object ((object declaration-element) stream)
-  (with-slots (name content) object
-    (format stream "<!~A ~A>"
-            name content)))
-
 (defgeneric render-object (object stream)
   (:method (object stream)
     (princ object stream)))
@@ -95,6 +86,15 @@
              (write-char #\" stream)))
       (when value
         (write-value value)))))
+
+(defmethod render-object ((object element-list) stream)
+  (dolist (element (element-list-elements object))
+    (render-object element stream)))
+
+(defmethod render-object ((object declaration-element) stream)
+  (with-slots (name content) object
+    (format stream "<!~A ~A>"
+            name content)))
 
 (defmethod render-object ((object string) stream)
   (write-string object stream))
