@@ -72,7 +72,7 @@
   (let ((next (peek-char nil stream)))
     (case next
       ((#\{ #\<)
-       (push (read stream) *reading-tag-children*))
+       (push (read-preserving-whitespace stream) *reading-tag-children*))
       (otherwise
        (push (read-as-string stream
                              (lambda (char)

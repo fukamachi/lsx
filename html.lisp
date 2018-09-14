@@ -107,7 +107,8 @@
 
 (defmethod render-object ((object element-list) stream)
   (dolist (element (element-list-elements object))
-    (render-object element stream)))
+    (render-object element stream)
+    (write-char #\Newline stream)))
 
 (defmethod render-object ((object declaration-element) stream)
   (with-slots (name content) object
