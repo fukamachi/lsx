@@ -7,7 +7,7 @@ env:
     - ROSWELL_INSTALL_DIR=$HOME/.roswell
     - COVERAGE_EXCLUDE=tests
   matrix:
-    - LISP=sbcl-bin COVERALLS=true
+    - LISP=sbcl-bin COVERAGE=true
     - LISP=ccl-bin
 
 install:
