@@ -1,12 +1,15 @@
 (defpackage #:lsx/html
   (:use #:cl)
   (:export #:h*
+           #:*auto-escape*
            #:render-object
            #:html-mode
            #:element
            #:element-list
+           #:danger-element
            #:declaration-element
            #:make-element
+           #:make-danger-element
            #:element-name
            #:element-attributes
            #:element-children
@@ -33,13 +36,17 @@
           do (setf (gethash char hash) escaped))
     hash))
 
+(defvar *auto-escape* t)
+
 (defun print-escaped-text (value stream)
   (declare (type string value))
-  (loop for char of-type character across value
-        for escaped = (gethash char *escape-map*)
-        if escaped
-          do (write-string escaped stream)
-        else do (write-char char stream)))
+  (if *auto-escape*
+      (loop for char of-type character across value
+            for escaped = (gethash char *escape-map*)
+            if escaped
+            do (write-string escaped stream)
+            else do (write-char char stream))
+      (write-string value stream)))
 
 (defstruct element
   (name nil :type string)
@@ -53,6 +60,9 @@
 (defstruct (declaration-element (:include element (name)))
   (content nil :type string))
 
+(defstruct danger-element
+  element)
+
 (defstruct attribute
   (name nil :type string)
   value)
@@ -65,6 +75,9 @@
   (print-unreadable-object (object stream :type t :identity t)
     (format stream "(~D ~:*element~[s~;~:;s~])"
             (length (element-list-elements object)))))
+
+(defmethod print-object ((object danger-element) stream)
+  (print-unreadable-object (object stream :type t :identity t)))
 
 (defgeneric render-object (object stream)
   (:method (object stream)
@@ -115,6 +128,10 @@
   (dolist (element (element-list-elements object))
     (render-object element stream)
     (write-char #\Newline stream)))
+
+(defmethod render-object ((object danger-element) stream)
+  (let ((*auto-escape* nil))
+    (render-object (danger-element-element object) stream)))
 
 (defmethod render-object ((object declaration-element) stream)
   (with-slots (name content) object
