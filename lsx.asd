@@ -4,7 +4,8 @@
   :author "Eitaro Fukamachi"
   :license "BSD 2-Clause"
   :description "Embeddable HTML templating engine with JSX-like syntax"
-  :depends-on ("lsx/main"))
+  :depends-on ("lsx/main")
+  :in-order-to ((test-op (test-op "lsx/tests"))))
 
 (defsystem "lsx/tests"
   :class :package-inferred-system
