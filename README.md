@@ -1,5 +1,9 @@
 # LSX
 
+[![Quicklisp dist](http://quickdocs.org/badge/lsx.svg)](http://quickdocs.org/lsx/)
+[![Build Status](https://travis-ci.org/fukamachi/lsx.svg?branch=master)](https://travis-ci.org/fukamachi/lsx)
+[![Coverage Status](https://coveralls.io/repos/fukamachi/lsx/badge.svg?branch=master)](https://coveralls.io/r/fukamachi/lsx)
+
 Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducing-jsx.html)-like syntax.
 
 ## Usage
