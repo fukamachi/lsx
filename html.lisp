@@ -82,7 +82,12 @@
 
 (defgeneric render-object (object stream)
   (:method (object stream)
-    (print-escaped-text (princ-to-string object) stream)))
+    (print-escaped-text (princ-to-string object) stream))
+  (:method :around (object (stream (eql 't)))
+    (render-object object *standard-output*))
+  (:method :around (object (stream (eql 'nil)))
+    (with-output-to-string (s)
+      (render-object object s))))
 
 (defmethod render-object ((element element) stream)
   (with-slots (name attributes children) element
