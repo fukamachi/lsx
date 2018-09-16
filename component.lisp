@@ -70,7 +70,7 @@
                                   direct-slots)
                           &allow-other-keys)
                    (mapc (lambda (element)
-                           (lsx:render-object element t))
+                           (render-object element t))
                          (list ,@render))
                    nil))))
   (apply #'call-next-method class initargs))
