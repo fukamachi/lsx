@@ -68,7 +68,11 @@
 
 (defgeneric render-object (object stream)
   (:method (object stream)
-    (print-escaped-text (princ-to-string object) stream)))
+    (print-escaped-text (princ-to-string object) stream))
+  (:method ((object cons) stream)
+    (loop for object in object
+          do (fresh-line stream)
+             (render-object object stream))))
 
 (defmethod render-object ((element element) stream)
   (with-slots (name attributes children) element

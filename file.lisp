@@ -13,6 +13,10 @@
         (*load-pathname* file)
         (*load-truename* file))
     (enable-lsx-syntax)
-    (make-element-list
-     :elements (mapcar #'eval
-                       (uiop:read-file-forms file)))))
+    (let ((forms
+            (uiop:read-file-forms file)))
+      (if (and (not (rest forms))
+               (consp (first forms))
+               (eq 'cl:lambda (first (first forms))))
+          (eval (eval (first forms)))
+          (make-element-list :elements (mapcar #'eval forms))))))

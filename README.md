@@ -47,11 +47,35 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ### Loading from file
 
 ```common-lisp
-(uiop:with-output-file (out #P"example.lsx" :if-exists :supersede)
-  (princ "<div id=\"main\"><h1>Hello</h1><p><a href=\"/entries\">Show Entries</a></p></div>" out))
+;; example.lsx
+(lambda (&key (name "Guest"))
+  (list
+<!doctype html>
+<html>
+  <head>
+    <title>Welcome {name}</title>
+  </head>
+  <body>
+    <div id="main"><h1>Hello</h1><p><a href="/entries">Show Entries</a></p></div>
+  </body>
+</html>)
+```
 
+```common-lisp
 (lsx:read-lsx-file #P"example.lsx")
-;=> #<LSX/HTML::ELEMENT div {100485C1A3}>
+;=> #<FUNCTION (LAMBDA (&KEY :NAME) :IN "~/Programs/lib/lsx/example.lsx") {1005E72B5B}>
+
+(lsx:render-object (funcall * :name "fukamachi") t)
+;-> <!doctype html>
+;   <html>
+;     <head>
+;       <title>Welcome fukamachi</title>
+;     </head>
+;     <body>
+;       <div id="main"><h1>Hello</h1><p><a href="/entries">Show Entries</a></p></div>
+;     </body>
+;   </html>
+;=> NIL
 ```
 
 ## See Also
