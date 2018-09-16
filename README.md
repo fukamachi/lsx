@@ -49,8 +49,6 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ```common-lisp
 ;; example.lsx
 (lambda (&key (name "Guest"))
-  (list
-<!doctype html>
 <html>
   <head>
     <title>Welcome {name}</title>
@@ -66,7 +64,7 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ;=> #<FUNCTION (LAMBDA (&KEY :NAME) :IN "~/Programs/lib/lsx/example.lsx") {1005E72B5B}>
 
 (lsx:render-object (funcall * :name "fukamachi") t)
-;-> <!doctype html>
+;-> <!DOCTYPE html>
 ;   <html>
 ;     <head>
 ;       <title>Welcome fukamachi</title>

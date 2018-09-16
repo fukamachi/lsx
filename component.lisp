@@ -2,7 +2,9 @@
   (:use #:cl)
   (:import-from #:lsx/html
                 #:render-object
-                #:h*)
+                #:make-element-list
+                #:h*
+                #:prologue)
   (:import-from #:closer-mop)
   (:export #:component
            #:component-class
@@ -28,15 +30,20 @@
 (defun h (tag-name attributes &optional (children nil children-specified-p))
   (let* ((name (read-from-string tag-name))
          (component-class (find-class name nil)))
-    (if (and component-class
-             (c2mop:subclassp component-class 'component))
-        (apply #'make-instance component-class
-               :children children
-               :allow-other-keys t
-               (html-attributes-to-plist attributes))
-        (if children-specified-p
-            (h* tag-name attributes children)
-            (h* tag-name attributes)))))
+    (cond
+      ((and component-class
+            (c2mop:subclassp component-class 'component))
+       (apply #'make-instance component-class
+              :children children
+              :allow-other-keys t
+              (html-attributes-to-plist attributes)))
+      ((string-equal name "html")
+       (make-element-list
+        :elements (list (prologue) (h* tag-name attributes children))))
+      (t
+       (if children-specified-p
+           (h* tag-name attributes children)
+           (h* tag-name attributes))))))
 
 (defclass component-slot-class (c2mop:standard-direct-slot-definition)
   ())
