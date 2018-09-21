@@ -2,4 +2,4 @@
 
 (syntax:define-package-syntax :lsx
   (:merge :standard)
-  (:macro-char #\< #'lsx::read-html-tag))
+  (:macro-char #\< #'lsx/reader::read-html-tag))
