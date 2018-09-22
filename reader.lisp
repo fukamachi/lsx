@@ -143,7 +143,7 @@
 (defun %enable-lsx-syntax ()
   (push *readtable* *previous-readtables*)
   (setf *readtable* (copy-readtable))
-  (set-macro-character #\< #'read-html-tag)
+  (set-macro-character #\< #'read-html-tag t)
   (set-macro-character #\> #'do-nothing)
   (values))
 
