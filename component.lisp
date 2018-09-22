@@ -17,6 +17,7 @@
 (defmethod render-object ((object component) stream)
   (let ((class (class-of object)))
     (apply (slot-value class 'render)
+           stream
            (mapcan (lambda (slot)
                      (when (slot-boundp object (c2mop:slot-definition-name slot))
                        (list (intern (princ-to-string (c2mop:slot-definition-name slot)) :keyword)
@@ -71,15 +72,17 @@
 
 (define-initialize-instance :around ((class component-class) &rest initargs &key direct-slots render &allow-other-keys)
   (when render
-    (setf (getf initargs :render)
-          (eval `(lambda (&key ,@(mapcar (lambda (slot)
-                                           (getf slot :name))
-                                  direct-slots)
-                          &allow-other-keys)
-                   (mapc (lambda (element)
-                           (render-object element t))
-                         (list ,@render))
-                   nil))))
+    (let ((stream (gensym "STREAM")))
+      (setf (getf initargs :render)
+            (eval `(lambda (,stream
+                            &key ,@(mapcar (lambda (slot)
+                                             (getf slot :name))
+                                    direct-slots)
+                            &allow-other-keys)
+                     (mapc (lambda (element)
+                             (render-object element ,stream))
+                           (list ,@render))
+                     nil)))))
   (apply #'call-next-method class initargs))
 
 (defmacro defcomponent (name superclasses slot-definitions &rest class-options)
