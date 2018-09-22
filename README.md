@@ -80,9 +80,38 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ;=> NIL
 ```
 
+## How it works
+
+LSX syntax is implemented as reader macro. It's able to see how it's expanded with quoting.
+
+```common-lisp
+'<br/>
+;=> (LSX/COMPONENT:H "br" (LIST))
+
+'<a href="/hello">Say Hello</a>
+;=> (LSX/COMPONENT:H "a" (LIST (CONS "href" "/hello")) (LIST "Say Hello"))
+
+'<a href="/hello">Say Hello at {(local-time:now)}</a>
+;=> (LSX/COMPONENT:H "a" (LIST (CONS "href" "/hello")) (LIST "Say Hello at " (LAMBDA () (LOCAL-TIME:NOW))))
+```
+
+`h` is a function to make an element. It takes 2 required arguments, a `tag-name` as a string and attributes as an association list, and a single optional argument, children as a list of elements.
+
+```common-lisp
+;; Same as <br/>
+(lsx:h "br" ())
+;=> #<LSX/HTML:ELEMENT br {10033183D3}>
+
+(lsx:h "a" '(("href" . "/hello")) '("Say Hello"))
+;=> #<LSX/HTML:ELEMENT a {100331D823}>
+
+(lsx:h "a" '(("href" . "/hello")) (list "Say Hello at " (lambda () (local-time:now))))
+```
+
 ## See Also
 
 - [Introducing JSX](https://reactjs.org/docs/introducing-jsx.html)
+- [JSX In Depth](https://reactjs.org/docs/jsx-in-depth.html)
 
 ## Author
 
