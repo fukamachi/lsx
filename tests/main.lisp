@@ -27,17 +27,17 @@
 
 (deftest element-tests
   (testing "Normal element"
-    (let ((br (read-lsx-string "<br/>")))
+    (let ((br (eval (read-lsx-string "<br/>"))))
       (ok (typep br 'element))
       (ok (equal (element-name br) "br"))
       (ok (outputs (render-object br t) "<br>"))))
   (testing "With attributes & children"
-    (let ((a (read-lsx-string "<a href=\"/hello\">Say Hello</a>")))
+    (let ((a (eval (read-lsx-string "<a href=\"/hello\">Say Hello</a>"))))
       (ok (typep a 'element))
       (ok (equal (element-name a) "a"))
       (ok (outputs (render-object a t) "<a href=\"/hello\">Say Hello</a>"))))
   (testing "Embed Lisp code"
-    (let ((a (read-lsx-string "<a href=\"/hello\">Say Hello at {(local-time:now)}</a>")))
+    (let ((a (eval (read-lsx-string "<a href=\"/hello\">Say Hello at {(local-time:now)}</a>"))))
       (ok (typep a 'element))
       (ok (equal (element-name a) "a"))
       (ok (ppcre:scan
@@ -54,6 +54,6 @@
     (name)
     (:render (h "h1" () (list (lambda () name)))))
 
-  (let ((welcome (read-lsx-string "<welcome name=\"fukamachi\" />")))
+  (let ((welcome (eval (read-lsx-string "<welcome name=\"fukamachi\" />"))))
     (ok (typep welcome 'welcome))
     (ok (outputs (render-object welcome t) "<h1>fukamachi</h1>"))))

@@ -16,7 +16,7 @@
 (defun read-lsx-string (string)
   (check-type string string)
   (with-lsx-syntax
-    (eval (read-from-string string))))
+    (read-from-string string)))
 
 (defun read-lsx-file (file)
   (check-type file pathname)
