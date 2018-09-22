@@ -149,6 +149,11 @@
 (defmethod render-object ((object null) stream)
   (declare (ignore stream)))
 
+(defmethod render-object ((object cons) stream)
+  (dolist (object object)
+    (render-object object stream)
+    (fresh-line stream)))
+
 (defmethod render-object ((object (eql 't)) stream)
   (declare (ignore stream)))
 
