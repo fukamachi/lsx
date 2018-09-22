@@ -28,7 +28,7 @@
   (loop for (name . value) in attributes
         append (list (read-from-string (format nil ":~A" name)) value)))
 
-(defun h (tag-name attributes &optional (children nil children-specified-p))
+(defun h (tag-name &optional attributes (children nil children-specified-p))
   (let* ((name (read-from-string tag-name))
          (component-class (find-class name nil)))
     (cond

@@ -95,11 +95,11 @@ LSX syntax is implemented as reader macro. It's able to see how it's expanded wi
 ;=> (LSX/COMPONENT:H "a" (LIST (CONS "href" "/hello")) (LIST "Say Hello at " (LAMBDA () (LOCAL-TIME:NOW))))
 ```
 
-`h` is a function to make an element. It takes 2 required arguments, a `tag-name` as a string and attributes as an association list, and a single optional argument, children as a list of elements.
+`h` is a function to make an element. It takes a single required argument, a `tag-name` as a string, and 2 optional arguments, attributes as an association list and children as a list of elements.
 
 ```common-lisp
 ;; Same as <br/>
-(lsx:h "br" ())
+(lsx:h "br")
 ;=> #<LSX/HTML:ELEMENT br {10033183D3}>
 
 (lsx:h "a" '(("href" . "/hello")) '("Say Hello"))
