@@ -130,6 +130,9 @@
          (unless (equal name *reading-tag*)
            (error "Unmatched closing tag: ~A" name)))
        (throw 'end-of-tag *reading-tag-children*))
+
+      ;; Fallback rules
+      ((char= next #\Space) '<)
       (t (intern (format nil "<~S" (read stream)))))))
 
 (defun do-nothing (stream char)
