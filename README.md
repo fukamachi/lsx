@@ -47,6 +47,40 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ;=> NIL
 ```
 
+### Defining templates
+
+```common-lisp
+(lsx:deftemplate default-layout ()
+  (title body)
+  (:render
+    <html>
+      <head>
+        <title>{title}</title>
+      </head>
+      <body>
+        {body}
+      </body>
+    </html>))
+
+(lsx:deftemplate index-page (default-layout)
+  ()
+  (:default-initargs
+   :title "Index"
+   :body <h1>Welcome</h1>))
+
+(lsx:render 'index-page)
+;=> "<!DOCTYPE html>
+;    <html>
+;          <head>
+;            <title>Index</title>
+;          </head>
+;          <body>
+;            <h1>Welcome</h1>
+;          </body>
+;        </html>
+;    "
+```
+
 ### Loading from file
 
 ```common-lisp

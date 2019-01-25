@@ -4,5 +4,6 @@
   (:use-reexport #:lsx/reader
                  #:lsx/html
                  #:lsx/tag
-                 #:lsx/file))
+                 #:lsx/file
+                 #:lsx/template))
 (in-package #:lsx)
