@@ -1,6 +1,6 @@
 (defpackage #:lsx/reader
   (:use #:cl)
-  (:import-from #:lsx/component
+  (:import-from #:lsx/tag
                 #:h)
   (:import-from #:lsx/html
                 #:make-declaration-element)
@@ -22,10 +22,11 @@
              (return (subseq buffer 0 i)))))
 
 (defun read-element-name (stream)
-  (read-as-string stream
-                  (lambda (char)
-                    (or (alphanumericp char)
-                        (find char '(#\- #\_ #\: #\.))))))
+  (read-from-string
+   (read-as-string stream
+                   (lambda (char)
+                     (or (alphanumericp char)
+                         (find char '(#\- #\_ #\: #\.)))))))
 
 (defun space-char-p (char)
   (find char '(#\Space #\Tab #\Linefeed #\Return #\Page)))
@@ -96,7 +97,7 @@
                (progn
                  (read-char stream)
                  (assert (char= (read-char stream) #\>))
-                 (list 'h name `(list ,@attrs)))
+                 `(h ',name (list ,@attrs)))
                (let ((*reading-tag* name)
                      (*reading-tag-children* (list))
                      (*default-readtable* *readtable*)
@@ -104,12 +105,11 @@
                  (assert (char= (read-char stream) #\>))
                  (set-macro-character #\{ #'inline-lisp-reader)
                  (set-syntax-from-char #\} #\))
-                 (list 'h name `(list ,@attrs)
-                       (progn
-                         (catch 'end-of-tag
-                           (read-html-tag-inner stream))
-                         `(list
-                           ,@(nreverse *reading-tag-children*)))))))))
+                 `(h ',name (list ,@attrs)
+                     (list ,@(progn
+                               (catch 'end-of-tag
+                                 (read-html-tag-inner stream))
+                               (nreverse *reading-tag-children*)))))))))
       ((char= next #\!)
        ;; Reading declaration
        (read-char stream)

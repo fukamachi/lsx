@@ -1,7 +1,7 @@
 (defpackage #:lsx/tests/main
   (:use #:cl
         #:rove
-        #:lsx/component
+        #:lsx/tag
         #:lsx/html
         #:lsx/file)
   (:import-from #:lsx/html
@@ -45,15 +45,9 @@
            (with-output-to-string (s)
              (render-object a s)))))))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (when (find-class 'welcome nil)
-    (setf (find-class 'welcome) nil)))
-
-(deftest custom-component-tests
-  (defcomponent welcome ()
-    (name)
-    (:render (h "h1" () (list (lambda () name)))))
+(deftest custom-tag-tests
+  (deftag welcome (&key name)
+    (h "h1" () (list (lambda () name))))
 
   (let ((welcome (eval (read-lsx-string "<welcome name=\"fukamachi\" />"))))
-    (ok (typep welcome 'welcome))
     (ok (outputs (render-object welcome t) "<h1>fukamachi</h1>"))))

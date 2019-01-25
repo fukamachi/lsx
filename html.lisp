@@ -162,7 +162,8 @@
 
 (defun h* (tag-name &optional attributes (children nil children-specified-p))
   (make-element
-   :name tag-name
+   :name (let ((*print-case* :downcase))
+           (princ-to-string tag-name))
    :attributes (loop for (name . value) in attributes
                      collect (make-attribute :name name :value value))
    :children children

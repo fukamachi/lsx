@@ -36,9 +36,8 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ### Defining custom tags
 
 ```common-lisp
-(lsx:defcomponent welcome ()
-  (name)
-  (:render <h1>{name}</h1>))
+(lsx:deftag welcome (&key name)
+  <h1>{name}</h1>)
 
 <welcome name="fukamachi"></welcome>
 ;=> #<WELCOME {10028D74D3}>
@@ -86,13 +85,13 @@ LSX syntax is implemented as reader macro. It's able to see how it's expanded wi
 
 ```common-lisp
 '<br/>
-;=> (LSX/COMPONENT:H "br" (LIST))
+;=> (LSX/TAG:H 'BR (LIST))
 
 '<a href="/hello">Say Hello</a>
-;=> (LSX/COMPONENT:H "a" (LIST (CONS "href" "/hello")) (LIST "Say Hello"))
+;=> (LSX/TAG:H 'A (LIST (CONS "href" "/hello")) (LIST "Say Hello"))
 
 '<a href="/hello">Say Hello at {(local-time:now)}</a>
-;=> (LSX/COMPONENT:H "a" (LIST (CONS "href" "/hello")) (LIST "Say Hello at " (LAMBDA () (LOCAL-TIME:NOW))))
+;=> (LSX/TAG:H 'A (LIST (CONS "href" "/hello")) (LIST "Say Hello at " (LAMBDA () (LOCAL-TIME:NOW))))
 ```
 
 `h` is a function to make an element. It takes a single required argument, a `tag-name` as a string, and 2 optional arguments, attributes as an association list and children as a list of elements.
