@@ -1,6 +1,6 @@
 (defpackage #:lsx/reader
   (:use #:cl)
-  (:import-from #:lsx/component
+  (:import-from #:lsx/tag
                 #:h)
   (:import-from #:lsx/html
                 #:make-declaration-element)

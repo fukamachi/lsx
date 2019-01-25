@@ -36,9 +36,8 @@ Embeddable HTML templating engine with [JSX](https://reactjs.org/docs/introducin
 ### Defining custom tags
 
 ```common-lisp
-(lsx:defcomponent welcome ()
-  (name)
-  (:render <h1>{name}</h1>))
+(lsx:deftag welcome (&key name)
+  <h1>{name}</h1>)
 
 <welcome name="fukamachi"></welcome>
 ;=> #<WELCOME {10028D74D3}>

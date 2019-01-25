@@ -3,6 +3,6 @@
   (:use #:cl)
   (:use-reexport #:lsx/reader
                  #:lsx/html
-                 #:lsx/component
+                 #:lsx/tag
                  #:lsx/file))
 (in-package #:lsx)
