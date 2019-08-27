@@ -4,6 +4,8 @@
                 #:h)
   (:import-from #:lsx/html
                 #:make-declaration-element)
+  (:import-from #:named-readtables
+                #:defreadtable)
   (:export #:enable-lsx-syntax
            #:disable-lsx-syntax))
 (in-package #:lsx/reader)
@@ -160,3 +162,7 @@
 (defmacro disable-lsx-syntax ()
   `(eval-when (:compile-toplevel :load-toplevel :execute)
      (%disable-lsx-syntax)))
+
+(defreadtable :lsx-syntax
+  (:merge :standard)
+  (:macro-char #\< #'read-html-tag t))
