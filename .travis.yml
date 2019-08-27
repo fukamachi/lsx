@@ -12,7 +12,7 @@ env:
 
 install:
   # Roswell
-  - curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh | sh
+  - curl -L https://raw.githubusercontent.com/fukamachi/roswell/travis-sbcl-bin-1.5.5/scripts/install-for-ci.sh | sh
   # Rove
   - ros install fukamachi/rove
 
