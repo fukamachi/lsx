@@ -31,6 +31,11 @@
       (ok (typep br 'element))
       (ok (equal (element-name br) "br"))
       (ok (outputs (render-object br t) "<br>"))))
+  (testing "Void element"
+    (let ((br (eval (read-lsx-string "<br>"))))
+      (ok (typep br 'element))
+      (ok (equal (element-name br) "br"))
+      (ok (outputs (render-object br t) "<br>"))))
   (testing "With attributes & children"
     (let ((a (eval (read-lsx-string "<a href=\"/hello\">Say Hello</a>"))))
       (ok (typep a 'element))
