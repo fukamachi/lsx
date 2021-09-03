@@ -84,6 +84,17 @@
     (loop
       (push (read-html-tag-inner stream) *reading-tag-children*))))
 
+(defparameter *void-tag-map*
+  #.(let ((ht (make-hash-table)))
+      (loop for key in
+	    '(:area :base :br :col :hr :img :input :link :meta :param :command :keygen :source)
+	    do (setf (gethash key ht) T))
+      ht))
+
+(defun void-tag-p (name)
+  (let ((name-keyword (intern (symbol-name name) "KEYWORD")))
+    (gethash name-keyword *void-tag-map*)))
+
 (defun read-html-tag (stream char)
   (declare (ignore char))
   (let ((next (peek-char nil stream)))
@@ -94,10 +105,10 @@
              (attrs (loop until (find (peek-char t stream) '(#\/ #\>))
                           collect `(cons ,@(read-attribute stream)))))
          (let ((next (peek-char t stream)))
-           (if (char= next #\/)
+           (if (or (void-tag-p name) (char= next #\/))
                ;; self closing tag
                (progn
-                 (read-char stream)
+                 (when (char= next #\/) (read-char stream))
                  (assert (char= (read-char stream) #\>))
                  `(h ',name (list ,@attrs)))
                (let ((*reading-tag* name)
