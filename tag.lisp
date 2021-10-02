@@ -32,7 +32,9 @@
     ((string-equal tag-name "html")
      (make-element-list
       :elements (list (prologue) (h* tag-name attributes children))))
-    (t
+    (tag-name
      (if children-specified-p
          (h* tag-name attributes children)
-         (h* tag-name attributes)))))
+         (h* tag-name attributes)))
+    (t
+     children)))

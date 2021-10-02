@@ -95,6 +95,20 @@
   (let ((name-keyword (intern (symbol-name name) "KEYWORD")))
     (gethash name-keyword *void-tag-map*)))
 
+(defun read-html-tag-children (stream name attrs)
+  (let ((*reading-tag* name)
+        (*reading-tag-children* (list))
+        (*default-readtable* *readtable*)
+        (*readtable* (copy-readtable)))
+    (assert (char= (read-char stream) #\>))
+    (set-macro-character #\{ #'inline-lisp-reader)
+    (set-syntax-from-char #\} #\))
+    `(h ',name (list ,@attrs)
+        (list ,@(progn
+                  (catch 'end-of-tag
+                    (read-html-tag-inner stream))
+                  (nreverse *reading-tag-children*))))))
+
 (defun read-html-tag (stream char)
   (declare (ignore char))
   (let ((next (peek-char nil stream)))
@@ -111,18 +125,9 @@
                  (when (char= next #\/) (read-char stream))
                  (assert (char= (read-char stream) #\>))
                  `(h ',name (list ,@attrs)))
-               (let ((*reading-tag* name)
-                     (*reading-tag-children* (list))
-                     (*default-readtable* *readtable*)
-                     (*readtable* (copy-readtable)))
-                 (assert (char= (read-char stream) #\>))
-                 (set-macro-character #\{ #'inline-lisp-reader)
-                 (set-syntax-from-char #\} #\))
-                 `(h ',name (list ,@attrs)
-                     (list ,@(progn
-                               (catch 'end-of-tag
-                                 (read-html-tag-inner stream))
-                               (nreverse *reading-tag-children*)))))))))
+               (read-html-tag-children stream name attrs)))))
+       ((char= next #\>)
+	(read-html-tag-children stream NIL '()))
       ((char= next #\!)
        ;; Reading declaration
        (read-char stream)
@@ -138,10 +143,14 @@
       ((char= next #\/)
        ;; Reading closing tag
        (read-char stream)
+       (if (char= #\> (peek-char nil stream))
+	   (if (equal nil *reading-tag*)
+	       (read-char stream)
+	       (error "Unmatched fragment"))
        (let ((name (read-element-name stream)))
          (assert (char= (read-char stream) #\>))
          (unless (equal name *reading-tag*)
-           (error "Unmatched closing tag: ~A" name)))
+           (error "Unmatched closing tag: ~A" name))))
        (throw 'end-of-tag *reading-tag-children*))
 
       ;; Fallback rules
