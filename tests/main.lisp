@@ -36,6 +36,9 @@
       (ok (typep br 'element))
       (ok (equal (element-name br) "br"))
       (ok (outputs (render-object br t) "<br>"))))
+  (testing "Fragments"
+    (let ((frag (eval (read-lsx-string "<><p>1</p><p>2</p></>"))))
+      (ok (outputs (render-object frag t) (format NIL "<p>1</p>~%<p>2</p>~%")))))
   (testing "With attributes & children"
     (let ((a (eval (read-lsx-string "<a href=\"/hello\">Say Hello</a>"))))
       (ok (typep a 'element))
