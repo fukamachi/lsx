@@ -3,7 +3,8 @@
   (:import-from #:lsx/tag
                 #:h)
   (:import-from #:lsx/html
-                #:make-declaration-element)
+                #:make-declaration-element
+                #:void-tag-p)
   (:import-from #:named-readtables
                 #:defreadtable)
   (:export #:enable-lsx-syntax
@@ -83,17 +84,6 @@
              *reading-tag-children*)))
     (loop
       (push (read-html-tag-inner stream) *reading-tag-children*))))
-
-(defparameter *void-tag-map*
-  #.(let ((ht (make-hash-table)))
-      (loop for key in
-	    '(:area :base :br :col :hr :img :input :link :meta :param :command :keygen :source)
-	    do (setf (gethash key ht) T))
-      ht))
-
-(defun void-tag-p (name)
-  (let ((name-keyword (intern (symbol-name name) "KEYWORD")))
-    (gethash name-keyword *void-tag-map*)))
 
 (defun read-html-tag-children (stream name attrs)
   (let ((*reading-tag* name)

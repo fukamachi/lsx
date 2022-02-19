@@ -39,6 +39,11 @@
   (testing "Fragments"
     (let ((frag (eval (read-lsx-string "<><p>1</p><p>2</p></>"))))
       (ok (outputs (render-object frag t) (format NIL "<p>1</p>~%<p>2</p>~%")))))
+  (testing "Self closing tags"
+    (let ((br (eval (read-lsx-string "<div><div /></div>"))))
+      (ok (typep br 'element))
+      (ok (equal (element-name br) "div"))
+      (ok (outputs (render-object br t) "<div><div></div></div>"))))
   (testing "With attributes & children"
     (let ((a (eval (read-lsx-string "<a href=\"/hello\">Say Hello</a>"))))
       (ok (typep a 'element))

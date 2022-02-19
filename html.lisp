@@ -2,6 +2,7 @@
   (:use #:cl)
   (:export #:h*
            #:*auto-escape*
+           #:void-tag-p
            #:render-object
            #:html-mode
            #:element
@@ -39,6 +40,17 @@
 
 (defvar *auto-escape* t)
 
+(defparameter *void-tag-map*
+  #.(let ((ht (make-hash-table)))
+      (loop for key in
+	    '(:area :base :br :col :hr :img :input :link :meta :param :command :keygen :source)
+	    do (setf (gethash key ht) T))
+      ht))
+
+(defun void-tag-p (name)
+  (let ((name-keyword (intern (symbol-name name) "KEYWORD")))
+    (gethash name-keyword *void-tag-map*)))
+
 (defun print-escaped-text (value stream)
   (declare (type string value))
   (if *auto-escape*
@@ -53,7 +65,8 @@
   (name nil :type string)
   (attributes nil :type list)
   (children nil :type list)
-  (self-closing nil :type boolean))
+  (self-closing nil :type boolean)
+  (void-tag nil :type boolean))
 
 (defstruct element-list
   (elements nil :type list))
@@ -90,16 +103,18 @@
       (render-object object s))))
 
 (defmethod render-object ((element element) stream)
-  (with-slots (name attributes children) element
+  (with-slots (name attributes children void-tag) element
     (format stream "<~A" name)
     (dolist (attr attributes)
       (render-object attr stream))
     (if (element-self-closing element)
-        (case (html-mode)
-          ((:xml :xhtml)
-           (write-string " />" stream))
-          (otherwise
-           (write-char #\> stream)))
+        (if void-tag
+            (case (html-mode)
+              ((:xml :xhtml)
+               (write-string " />" stream))
+              (otherwise
+               (write-char #\> stream)))
+            (format stream "></~A>" name))
         (progn
           (write-char #\> stream)
           (loop for (child . rest) on children
@@ -167,6 +182,7 @@
    :attributes (loop for (name . value) in attributes
                      collect (make-attribute :name name :value value))
    :children children
+   :void-tag (void-tag-p (intern (princ-to-string tag-name)))
    :self-closing (not children-specified-p)))
 
 (defun prologue ()
