@@ -154,7 +154,8 @@
        (throw 'end-of-tag *reading-tag-children*))
 
       ;; Fallback rules
-      ((char= next #\Space) '<)
+      ((or (char= next #\Space)
+           (char= next #\)))'<)
       (t (intern (format nil "<~S" (read stream)))))))
 
 (defun do-nothing (stream char)
